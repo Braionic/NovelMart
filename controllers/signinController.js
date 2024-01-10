@@ -9,7 +9,7 @@ const signinController = async (req, res) => {
       const isauser = await userModel.findOne({ email: email });
       if (isauser) {
         console.log(isauser);
-        if (isauser.password === password) {
+        if (isauser.isPasswordMatched(password)/*isauser.password === password*/) {
           const token = jwt.sign({ id: isauser._id }, process.env.SECRETE_KEY, {
             algorithm: "HS256",
             expiresIn: process.env.ACCESS_TOKEN_LIFE,

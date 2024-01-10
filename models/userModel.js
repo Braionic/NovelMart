@@ -27,29 +27,23 @@ var userSchema = new mongoose.Schema(
       default: "user",
     },
     isBlocked: {
-        type: Boolean,
-        default: false
-    }
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
 
-userSchema.pre("save", async function(next) {
+userSchema.pre("save", function (next) {
   console.log(this.password);
   //const salt = await bcrypt.genSaltSync(10);
-  //this.password = await bcrypt.hash(this.password, 10);
-  console.log(this.password);
-  //return next();
+  this.password = bcrypt.hashSync(this.password, 10);
+  return next();
 });
 
-/*userSchema.methods.isPasswordMatched = function(password) {
-  bcrypt.compare(this.password, password, (err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log(result);
-    }
-  }); 
-};*/
+userSchema.methods.isPasswordMatched = function (password) {
+  const compareResult = bcrypt.compareSync(password, this.password);
+  return compareResult;
+};
 //Export the model
 module.exports = mongoose.model("User", userSchema);
