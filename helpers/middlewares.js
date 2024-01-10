@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel");
+const { isValidObjectId } = require("mongoose");
 
 module.exports = {
   authMiddleWare: (req, res, next) => {
