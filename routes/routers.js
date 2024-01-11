@@ -1,16 +1,7 @@
 const express = require("express");
-const signupController = require("../controllers/userSignUpController");
-const signinController = require("../controllers/signinController");
-const allUsers = require("../controllers/allUsers");
-const user = require("../controllers/user");
-const updateUser = require("../controllers/updateUser");
-const blockUser = require("../controllers/blockUser");
 const router = express.Router();
 const { authMiddleWare, isAdmin } = require("../helpers/middlewares");
-const unblockUser = require("../controllers/unblockUser");
-const deleteUser = require("../controllers/deleteUser");
-const refreshController = require("../controllers/refreshController");
-const logoutHandler = require("../controllers/userController");
+const {signupController, signinController, allUsers, user, updateUser, blockUser, unblockUser, logoutHandler,refreshController, deleteUser}  = require("../controllers/userController");
 
 router.get("/", (req, res) => {
   res.json("this is now the home");
