@@ -12,7 +12,7 @@ module.exports = {
         process.env.SECRETE_KEY,
         function (err, decoded) {
           if (err) {
-            res.json({ auth: false, message: err });
+            return res.json({ auth: false, message: err });
           } else {
             req.id = decoded.id;
             return next();
@@ -22,7 +22,7 @@ module.exports = {
       );
     } else {
       console.log("token not present or expired, please sign in");
-      res.json({ msg: "token not found or expired" });
+      return res.json({ msg: "token not found or expired" });
     }
   },
   isAdmin: async (req, res, next) => {
