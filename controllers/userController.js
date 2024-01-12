@@ -5,6 +5,7 @@ const generateRefreshToken = require("../helpers/generateRefreshToken");
 const generateToken = require("../helpers/generateToken");
 const jwt = require("jsonwebtoken");
 
+//Generate refresh token
 const refreshController = async (req, res) => {
   console.log(`this is the refresh token ${req.cookies.refreshToken}`);
   if (!req.cookies?.refreshToken) {
@@ -36,6 +37,7 @@ const refreshController = async (req, res) => {
   });
 };
 
+//signup an Admin
 const adminSignupController = async (req, res) => {
   const { name, email, password, mobile } = req.body;
   const User = new userModel(req.body);
@@ -48,6 +50,7 @@ const adminSignupController = async (req, res) => {
   }
 };
 
+//logout a user
 const logoutHandler = async (req, res) => {
   if (!req.cookies?.refreshToken) {
     res.clearCookie("refreshToken", { httpOnly: true });
@@ -68,6 +71,7 @@ const logoutHandler = async (req, res) => {
   res.sendStatus(403);
 };
 
+//get all users
 const allUsers = (req, res) => {
   const users = userModel
     .find({})
@@ -77,6 +81,7 @@ const allUsers = (req, res) => {
     .catch((err) => console.log(err));
 };
 
+//Block a user
 const blockUser = (req, res) => {
   const id = req.params.id;
   if (!isIdValid(id)) {
@@ -92,6 +97,7 @@ const blockUser = (req, res) => {
     });
 };
 
+//Delete a user
 const deleteUser = (req, res) => {
   const id = req.params;
   if (!isIdValid(id)) {
@@ -107,6 +113,7 @@ const deleteUser = (req, res) => {
     });
 };
 
+//signin a user
 const signinController = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -153,6 +160,7 @@ const signinController = async (req, res) => {
   }
 };
 
+//unblock a user
 const unblockUser = (req, res) => {
   const id = req.params.id;
   if (!isIdValid(id)) {
@@ -168,56 +176,58 @@ const unblockUser = (req, res) => {
     });
 };
 
+//get a single user
 const user = (req, res) => {
-    const {id} = req.params;
-    console.log(id)
-    userModel
-      .findById(id)
-      .then((user) => {
-        res.status(200).json(user);
-      })
-      .catch((err) => {
-        res.status(400).json({ msg: err });
-      });
-  };
+  const { id } = req.params;
+  console.log(id);
+  userModel
+    .findById(id)
+    .then((user) => {
+      res.status(200).json(user);
+    })
+    .catch((err) => {
+      res.status(400).json({ msg: err });
+    });
+};
 
-  const signupController = async (req, res)=>{
-    const {name, email, password, mobile} = req.body
-    const User = new userModel(req.body)
-    try {
-        const savedData = await User.save()
-        res.json(savedData)
-    } catch (error) {
-        res.json(`error: ${error}`)
-    }
-}
+//create a user account
+const signupController = async (req, res) => {
+  const { name, email, password, mobile } = req.body;
+  const User = new userModel(req.body);
+  try {
+    const savedData = await User.save();
+    res.json(savedData);
+  } catch (error) {
+    res.json(`error: ${error}`);
+  }
+};
 
+//update user
 const updateUser = (req, res) => {
-    const id = req.params.id;
-    if (!isIdValid(id)) {
-      return res.status(404).json({msg: "you entered an invalid id"})
-    }
-    const { name, email, mobile } = req.body;
-    const incomingDetails = {
-      name: name && name,
-      email: email && email,
-      mobile: mobile && mobile,
-    };
-    userModel
-      .findOneAndUpdate({ _id: id }, incomingDetails)
-      .then((user) => {
-        if (!user) {
-          return res.status(404).json({ msg: "user not found" });
-        } else {
-          return res.status(200).json(user);
-        }
-      })
-      .catch((err) => {
-        res.status(404).json({ msg: err.message });
-      });
+  const id = req.params.id;
+  if (!isIdValid(id)) {
+    return res.status(404).json({ msg: "you entered an invalid id" });
+  }
+  const { name, email, mobile } = req.body;
+  const incomingDetails = {
+    name: name && name,
+    email: email && email,
+    mobile: mobile && mobile,
   };
+  userModel
+    .findOneAndUpdate({ _id: id }, incomingDetails)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ msg: "user not found" });
+      } else {
+        return res.status(200).json(user);
+      }
+    })
+    .catch((err) => {
+      res.status(404).json({ msg: err.message });
+    });
+};
 
-  
 module.exports = {
   logoutHandler,
   adminSignupController,
@@ -229,5 +239,5 @@ module.exports = {
   unblockUser,
   user,
   signupController,
-  updateUser
+  updateUser,
 };
