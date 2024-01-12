@@ -6,12 +6,14 @@ const db = require('./helpers/db')
 const authrouter = require('./routes/routers')
 const gencode = require('./helpers/generateKey')
 const cookieParser = require('cookie-parser')
+const morgan = require('morgan')
 const productRouter = require('./routes/productRouters')
 
 
 db(express, app, mongoose)
 app.use(cookieParser())
 app.use(express.json())
+app.use(morgan('dev'))
 
 app.use('/api/user', authrouter)
 app.use('/api/product', productRouter)
