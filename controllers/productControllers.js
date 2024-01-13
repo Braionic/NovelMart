@@ -46,17 +46,24 @@ const getProducts = async (req, res) => {
     } else {
       products = products.select("-__v");
     }
-    if(req.query.page){
-      let page = req.query.page
-      const limit = parseInt(req.query.show) || 3
-      console.log(`this ${limit}`)
-      const skipped = (page - 1) * limit
-      products = products.skip(skipped).limit(limit)
+    if (req.query.page) {
+      let page = req.query.page;
+      const limit = parseInt(req.query.show) || 3;
+      console.log(`this ${limit}`);
+      const skipped = (page - 1) * limit;
+      products = products.skip(skipped).limit(limit);
+
+      let documentCount = await Product.countDocuments();
+      let pagecount = documentCount / limit;
+      console.log(Math.ceil(pagecount));
+      if (skipped >= documentCount) {
+        return res.status(404).json({ msg: "no more products" });
+      }
     }
 
     const finalProducts = await products;
-    console.log(finalProducts)
-    res.status(200).json(finalProducts);
+    console.log(finalProducts);
+    return res.status(200).json(finalProducts);
   }
 };
 
