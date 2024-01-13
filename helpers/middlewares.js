@@ -22,7 +22,7 @@ module.exports = {
       );
     } else {
       console.log("token not present or expired, please sign in");
-      return res.json({ msg: "token not found or expired" });
+      return res.json({ msg: "token not found or expired, please signin again" });
     }
   },
   isAdmin: async (req, res, next) => {

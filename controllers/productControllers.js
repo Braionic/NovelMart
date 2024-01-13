@@ -21,15 +21,42 @@ const getProducts = async (req, res) => {
   console.log(req.query);
   let objQuery = { ...req.query };
   const filter = ["page", "fields", "sort", "page"];
-  
-  filter.forEach((el)=> delete objQuery[el])
-  objQuery = JSON.stringify(objQuery)
-  
-  objQuery = objQuery.replace(/\b(lt|lte|gte|et|gt)\b/g, ((match)=> `$${match}`))
-  console.log(objQuery)
-  const products = await Product.find(JSON.parse(objQuery));
+
+  filter.forEach((el) => delete objQuery[el]);
+  objQuery = JSON.stringify(objQuery);
+
+  objQuery = objQuery.replace(
+    /\b(lt|lte|gte|et|gt)\b/g,
+    (match) => `$${match}`
+  );
+  let products = Product.find(JSON.parse(objQuery));
   if (products) {
-    res.status(200).json(products);
+    let sortQuery;
+    let fieldsquery;
+    if (req.query.sort) {
+      sortQuery = req.query.sort.split(",").join(" ");
+      products = products.sort(sortQuery.sort);
+    } else {
+      products = products.sort("-createdAt");
+    }
+    if (req.query.fields) {
+      let selectFields = req.query.fields.split(",").join(" ");
+      console.log(` this is me ${selectFields}`);
+      products = products.select(`${selectFields}`);
+    } else {
+      products = products.select("-__v");
+    }
+    if(req.query.page){
+      let page = req.query.page
+      const limit = parseInt(req.query.show) || 3
+      console.log(`this ${limit}`)
+      const skipped = (page - 1) * limit
+      products = products.skip(skipped).limit(limit)
+    }
+
+    const finalProducts = await products;
+    console.log(finalProducts)
+    res.status(200).json(finalProducts);
   }
 };
 
