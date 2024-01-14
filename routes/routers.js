@@ -12,6 +12,7 @@ const {
   logoutHandler,
   refreshController,
   deleteUser,
+  changePassword,
 } = require("../controllers/userController");
 
 router.get("/", (req, res) => {
@@ -27,6 +28,7 @@ router.patch("/updateUser/:id", authMiddleWare, updateUser);
 router.patch("/blockUser/:id", authMiddleWare, isAdmin, blockUser);
 router.patch("/unblockUser/:id", authMiddleWare, isAdmin, unblockUser);
 router.delete("/deleteUser/:id", authMiddleWare, isAdmin, deleteUser);
+router.patch("/updatePassword", authMiddleWare, changePassword)
 router.post("/logout", logoutHandler);
 
 module.exports = router;

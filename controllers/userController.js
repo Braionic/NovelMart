@@ -228,6 +228,29 @@ const updateUser = (req, res) => {
     });
 };
 
+//change Password
+const changePassword = async (req,res)=>{
+  const id = req.id
+  const password = req.body.password
+  console.log(password)
+ try {
+  const user = await userModel.findById(id);
+  if(!user){
+    return res.status(404).json({msg: "you dont have access to this page"})
+  }
+  if(password){
+    user.password = password
+    user.passwordLastModified = Date.now()
+    const passwordChanged = await user.save()
+    res.status(200).json(passwordChanged)
+  }
+ } catch (error) {
+  console.log(error)
+ }
+
+
+}
+
 module.exports = {
   logoutHandler,
   adminSignupController,
@@ -240,4 +263,5 @@ module.exports = {
   user,
   signupController,
   updateUser,
+  changePassword
 };

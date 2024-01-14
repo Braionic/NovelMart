@@ -32,13 +32,19 @@ var userSchema = new mongoose.Schema(
     },
     refreshToken: {
       type: String,
-      default: ""
-    }
+      default: "",
+    },
+    passwordLastModified: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
 
 userSchema.pre("save", function (next) {
+  if (!this.isModified("password")) {
+    return next();
+  }
   console.log(this.password);
   //const salt = await bcrypt.genSaltSync(10);
   this.password = bcrypt.hashSync(this.password, 10);
