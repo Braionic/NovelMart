@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const userModel = require("../models/userModel");
 const { isIdValid, sendEmail } = require("../helpers/helperFunctions");
 const generateRefreshToken = require("../helpers/generateRefreshToken");
+const crypto = require("crypto");
 const generateToken = require("../helpers/generateToken");
 const jwt = require("jsonwebtoken");
 
@@ -262,17 +263,46 @@ const resetPasswordToken = async (req, res) => {
     const data = {
       to: user.email,
       from: '"Novel commerce" <admin@fedalogistics.co.za>',
-      resetUrl: `you have requested a link to reset your password, please click on the link <a href="http://localhost:1000/resetPasswordToken/${token}">Click here</a>`,
+      resetUrl: `you have requested a link to reset your password, please click on the link <a href="http://localhost:1000/api/user/resetPasswordToken/${token}">Click here</a>`,
     };
-    const userSaved = await user.save()
-    console.log(userSaved)
+    const userSaved = await user.save();
+    console.log(userSaved);
     sendEmail(data);
-    res.status(200).json({token})
-  }else{
-    return res.status(404).json({msg: "email must be provided"})
+    return res.status(200).json({ token });
+  } else {
+    return res.status(404).json({ msg: "email must be provided" });
   }
 };
 
+//check user pasword refresh token
+const passwordTokenCheck = async (req, res) => {
+  const userToken = req.params.token;
+  const password = req.body?.password;
+  const digestedToken = crypto
+    .createHash("sha256")
+    .update(userToken)
+    .digest("hex");
+  console.log(digestedToken, "new token");
+  const user = await userModel.findOne({
+    resetPasswordToken: digestedToken,
+    passwordTokenExpiration: { $gte: Date.now() },
+  });
+  if (!user) {
+    return res.status(404).json({
+      msg: "token expire or no user was found, please request a new token",
+      data: user,
+    });
+  }
+  if (password) {
+    user.password = password;
+    user.passwordTokenExpiration = "";
+    user.resetPasswordToken = undefined;
+    const userSaved = await user.save();
+    return res.status(200).json(userSaved);
+  } else {
+    return res.status(404).json({ msg: "your new password must be specified" });
+  }
+};
 module.exports = {
   logoutHandler,
   adminSignupController,
@@ -287,4 +317,5 @@ module.exports = {
   updateUser,
   changePassword,
   resetPasswordToken,
+  passwordTokenCheck,
 };

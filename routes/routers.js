@@ -14,6 +14,7 @@ const {
   deleteUser,
   changePassword,
   resetPasswordToken,
+  passwordTokenCheck,
 } = require("../controllers/userController");
 
 router.get("/", (req, res) => {
@@ -31,6 +32,7 @@ router.patch("/unblockUser/:id", authMiddleWare, isAdmin, unblockUser);
 router.delete("/deleteUser/:id", authMiddleWare, isAdmin, deleteUser);
 router.patch("/updatePassword", authMiddleWare, changePassword)
 router.post("/resetPasswordToken", resetPasswordToken)
+router.post("/resetPasswordToken/:token", passwordTokenCheck)
 router.post("/logout", logoutHandler);
 
 module.exports = router;
