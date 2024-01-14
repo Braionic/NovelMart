@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const userModel = require("../models/userModel");
-const isIdValid = require("../helpers/helperFunctions");
+const { isIdValid, sendEmail } = require("../helpers/helperFunctions");
 const generateRefreshToken = require("../helpers/generateRefreshToken");
 const generateToken = require("../helpers/generateToken");
 const jwt = require("jsonwebtoken");
@@ -229,27 +229,49 @@ const updateUser = (req, res) => {
 };
 
 //change Password
-const changePassword = async (req,res)=>{
-  const id = req.id
-  const password = req.body.password
-  console.log(password)
- try {
-  const user = await userModel.findById(id);
-  if(!user){
-    return res.status(404).json({msg: "you dont have access to this page"})
+const changePassword = async (req, res) => {
+  const id = req.id;
+  const password = req.body.password;
+  console.log(password);
+  try {
+    const user = await userModel.findById(id);
+    if (!user) {
+      return res.status(404).json({ msg: "you dont have access to this page" });
+    }
+    if (password) {
+      user.password = password;
+      user.passwordLastModified = Date.now();
+      const passwordChanged = await user.save();
+      res.status(200).json(passwordChanged);
+    }
+  } catch (error) {
+    console.log(error);
   }
-  if(password){
-    user.password = password
-    user.passwordLastModified = Date.now()
-    const passwordChanged = await user.save()
-    res.status(200).json(passwordChanged)
+};
+
+//reset password token
+const resetPasswordToken = async (req, res) => {
+  const userEmail = req.body.email;
+  const user = await userModel.findOne({ email: userEmail });
+  if (!user) {
+    return res.status(404).json({ msg: "no user with such details" });
   }
- } catch (error) {
-  console.log(error)
- }
-
-
-}
+  if (userEmail) {
+    const token = await user.generateToken();
+    console.log(token);
+    const data = {
+      to: user.email,
+      from: '"Novel commerce" <admin@fedalogistics.co.za>',
+      resetUrl: `you have requested a link to reset your password, please click on the link <a href="http://localhost:1000/resetPasswordToken/${token}">Click here</a>`,
+    };
+    const userSaved = await user.save()
+    console.log(userSaved)
+    sendEmail(data);
+    res.status(200).json({token})
+  }else{
+    return res.status(404).json({msg: "email must be provided"})
+  }
+};
 
 module.exports = {
   logoutHandler,
@@ -263,5 +285,6 @@ module.exports = {
   user,
   signupController,
   updateUser,
-  changePassword
+  changePassword,
+  resetPasswordToken,
 };
