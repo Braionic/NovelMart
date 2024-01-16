@@ -4,9 +4,7 @@ const nodemailer = require('nodemailer')
 const isIdValid = (userId) => {
   console.log({ msg: userId, msg2: "testing" });
   const isValid = isValidObjectId(userId);
-  if (!isValid) {
-    return isValid
-  }
+  return isValid
 };
 
 const sendEmail = (data, req, res) =>{

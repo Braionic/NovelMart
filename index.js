@@ -8,6 +8,7 @@ const gencode = require('./helpers/generateKey')
 const cookieParser = require('cookie-parser')
 const morgan = require('morgan')
 const productRouter = require('./routes/productRouters')
+const blogRouter = require('./routes/blogRouters')
 
 
 db(express, app, mongoose)
@@ -17,5 +18,6 @@ app.use(morgan('dev'))
 
 app.use('/api/user', authrouter)
 app.use('/api/product', productRouter)
+app.use('/api/blog/', blogRouter)
 
 
