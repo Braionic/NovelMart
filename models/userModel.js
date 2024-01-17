@@ -23,6 +23,12 @@ var userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    wishList: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "product",
+      },
+    ],
     role: {
       type: String,
       default: "user",

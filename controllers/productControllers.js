@@ -1,6 +1,9 @@
 const isIdValid = require("../helpers/helperFunctions");
+const productModel = require("../models/productModel");
 const Product = require("../models/productModel");
 const slugify = require("slugify");
+const userModel = require("../models/userModel");
+const { default: mongoose } = require("mongoose");
 
 //Upload Product
 const uploadProduct = async (req, res) => {
@@ -80,13 +83,14 @@ const getProduct = async (req, res) => {
   }
 };
 
+// update product
 const updateProduct = async (req, res) => {
   const { id } = req.params;
   const { title, description } = req.body;
   try {
     const updatedProduct = await Product.findOneAndUpdate(
       { _id: id },
-      { title: title, description: description },
+      req.body,
       { new: true }
     );
     if (updatedProduct) {
@@ -100,4 +104,54 @@ const updateProduct = async (req, res) => {
   }
 };
 
-module.exports = { uploadProduct, getProducts, getProduct, updateProduct };
+
+//add item to wishlist
+const addToWishlist = async (req, res)=> {
+  const id = req.id
+  const productId = req.body.id
+  try {
+  const findUser = await userModel.findById(id)
+  console.log(findUser,id, productId, "testing this annoying bug")
+  if(findUser){
+    const checkWishlist = findUser.wishList.find((productID)=> productID.toString() == productId.toString())
+    if(checkWishlist){
+      return res.json({msg: "you have already added this item"})
+    }else{
+      const isaddToWishList = await userModel.findByIdAndUpdate(id, {$push: {wishList: productId}}, {new: true}).populate('wishList')
+      if(isaddToWishList){
+        return res.json(isaddToWishList)
+      }
+    }
+  }
+  } catch (error) {
+    res.json(error.message)
+  }
+  
+}
+//remove item from wishlist
+const removeFromWishlist = async (req, res)=> {
+  const id = req.id
+  const productId = req.body.id
+  try {
+  const findUser = await userModel.findById(id)
+  console.log(findUser,id, productId, "testing this annoying bug")
+  if(findUser){
+    const checkWishlist = findUser.wishList.find((productID)=> productID.toString() == productId.toString())
+    console.log(checkWishlist, "na me be this")
+    if(checkWishlist){
+      const isremovedFromWishList = await userModel.findByIdAndUpdate(id, {$pull: {wishList: productId}}, {new: true})
+      if(isremovedFromWishList){
+        return res.json(isremovedFromWishList)
+      }
+      
+    }else{
+      return res.json({msg: "product not in cart"})
+    }
+  }
+  } catch (error) {
+    res.json(error.message)
+  }
+  
+}
+
+module.exports = { uploadProduct, getProducts, getProduct, updateProduct, addToWishlist, removeFromWishlist };
