@@ -6,6 +6,14 @@ const blogSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    pageViews: {
+      type: Number,
+      default: 0
+    },
+
+    category: {
+      type: String
+    },
 
     description: {
       type: String,
@@ -33,14 +41,14 @@ const blogSchema = new mongoose.Schema(
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Users",
+        ref: "User",
       },
     ],
 
     dislikes: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Users",
+        ref: "User",
       },
     ],
   },

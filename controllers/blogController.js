@@ -2,6 +2,7 @@ const { json } = require("express");
 const blogModel = require("../models/BlogModel");
 const { isValidObjectId, default: mongoose } = require("mongoose");
 const { isIdValid } = require("../helpers/helperFunctions");
+const { findOneAndUpdate } = require("../models/productModel");
 
 const postBlog = async (req, res) => {
   try {
@@ -16,6 +17,7 @@ const postBlog = async (req, res) => {
   }
 };
 
+//Get All Blog Posts
 const getBlogs = async (req, res) => {
   try {
     const allblogs = await blogModel.find({});
@@ -27,6 +29,7 @@ const getBlogs = async (req, res) => {
   }
 };
 
+//Get a Single Blog
 const getSingleBlog = async (req, res) => {
   const { id } = req.params;
   if (!isIdValid(id)) {
@@ -36,6 +39,14 @@ const getSingleBlog = async (req, res) => {
     const getABlog = await blogModel.findOne({
       _id: new mongoose.Types.ObjectId(id),
     });
+    //increment number of views for this post by one
+    const numViews = await blogModel.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(id) },
+      { $inc: { pageViews: 1 } }
+    );
+    if (numViews) {
+      console.log(numViews);
+    }
     if (getABlog) {
       return res.status(200).json(getABlog);
     } else {
@@ -46,6 +57,7 @@ const getSingleBlog = async (req, res) => {
   }
 };
 
+//Update Blog Post
 const updateBlog = async (req, res) => {
   const { id } = req.body;
   if (!isIdValid(id)) {
@@ -64,7 +76,7 @@ const updateBlog = async (req, res) => {
     console.log(error);
   }
 };
-
+//Delete a blog post
 const deleteBlog = async (req, res) => {
   const { id } = req.params;
   if (!isIdValid(id)) {
@@ -81,4 +93,62 @@ const deleteBlog = async (req, res) => {
     console.log(error);
   }
 };
-module.exports = { postBlog, getBlogs, getSingleBlog, updateBlog, deleteBlog };
+
+const likeBlogPost = async (req, res) => {
+  const blogId = req.body.id;
+  const user = req.id;
+  const likedPost = await blogModel.findById(blogId);
+  const isliked = likedPost.isLiked;
+  const isDisliked = likedPost.dislikes.find(
+    (userId) => userId.toString() == user.toString()
+  );
+  if (isDisliked) {
+    try {
+      const updateDislike = await blogModel.findByIdAndUpdate(
+        blogId,
+        { $pull: { dislikes: user }, isDisliked: false },
+        { new: true }
+      );
+      if (updateDislike) {
+        console.log(updateDislike);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  if (isliked) {
+    try {
+      const removeLike = await blogModel.findByIdAndUpdate(
+        blogId,
+        { $pull: { likes: user }, isLiked: false },
+        { new: true }
+      );
+      if (removeLike) {
+        return res.json(removeLike);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    try {
+      const likeThePost = await blogModel.findByIdAndUpdate(
+        blogId,
+        { $push: { likes: user }, isLiked: true },
+        { new: true }
+      );
+      if (likeThePost) {
+        return res.json(likeThePost);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+};
+module.exports = {
+  postBlog,
+  getBlogs,
+  getSingleBlog,
+  updateBlog,
+  deleteBlog,
+  likeBlogPost,
+};
