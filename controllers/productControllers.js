@@ -19,7 +19,7 @@ const uploadProduct = async (req, res) => {
     console.log(error);
   }
 };
-
+//Get all products
 const getProducts = async (req, res) => {
   console.log(req.query);
   let objQuery = { ...req.query };

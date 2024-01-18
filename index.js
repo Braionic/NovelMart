@@ -23,4 +23,4 @@ app.use("/api/product", productRouter);
 app.use("/api/blog/", blogRouter);
 app.use("/api/productCategory", productCategoryRouter);
 app.use('/api/blogcategory', blogCategoryRouter)
-app.use('/api/brand/createbrand', brandRouter)
+app.use('/api/brand/', brandRouter)

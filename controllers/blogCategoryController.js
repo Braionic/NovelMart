@@ -1,5 +1,16 @@
 const blogCGModel = require("../models/blogCategoryModel");
 
+//get all blog categories
+const allCategory = async (req, res) => {
+  try {
+    const prdcategory = await blogCGModel.find({});
+    if (prdcategory) {
+      res.json(prdcategory);
+    }
+  } catch (error) {
+    res.json({ msg: error.message });
+  }
+};
 //create a blog post
 const createCategory = async (req, res) => {
   console.log("working");
@@ -37,4 +48,25 @@ const updateCategory = async (req, res) => {
     console.log(error.message);
   }
 };
-module.exports = { createCategory, updateCategory };
+
+//delete a blog category
+
+const deleteCategory = async (req, res) => {
+  const id = req.params?.id;
+  try {
+    const deletedCategory = await blogCGModel.findByIdAndDelete(id);
+    if (deletedCategory) {
+      res.json(deletedCategory);
+    } else {
+      res.json({ msg: "no category found" });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+module.exports = {
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  allCategory,
+};
