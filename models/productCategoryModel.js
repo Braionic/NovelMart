@@ -4,7 +4,8 @@ const mongoose = require('mongoose')
 const PDCategorySchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     }
 }, {timeseries: true})
 
