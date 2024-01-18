@@ -303,6 +303,8 @@ const passwordTokenCheck = async (req, res) => {
     return res.status(404).json({ msg: "your new password must be specified" });
   }
 };
+
+
 module.exports = {
   logoutHandler,
   adminSignupController,
@@ -318,4 +320,5 @@ module.exports = {
   changePassword,
   resetPasswordToken,
   passwordTokenCheck,
+ 
 };

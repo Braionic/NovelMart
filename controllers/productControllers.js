@@ -104,54 +104,113 @@ const updateProduct = async (req, res) => {
   }
 };
 
-
 //add item to wishlist
-const addToWishlist = async (req, res)=> {
-  const id = req.id
-  const productId = req.body.id
+const addToWishlist = async (req, res) => {
+  const id = req.id;
+  const productId = req.body.id;
   try {
-  const findUser = await userModel.findById(id)
-  console.log(findUser,id, productId, "testing this annoying bug")
-  if(findUser){
-    const checkWishlist = findUser.wishList.find((productID)=> productID.toString() == productId.toString())
-    if(checkWishlist){
-      return res.json({msg: "you have already added this item"})
-    }else{
-      const isaddToWishList = await userModel.findByIdAndUpdate(id, {$push: {wishList: productId}}, {new: true}).populate('wishList')
-      if(isaddToWishList){
-        return res.json(isaddToWishList)
-      }
-    }
-  }
-  } catch (error) {
-    res.json(error.message)
-  }
-  
-}
-//remove item from wishlist
-const removeFromWishlist = async (req, res)=> {
-  const id = req.id
-  const productId = req.body.id
-  try {
-  const findUser = await userModel.findById(id)
-  console.log(findUser,id, productId, "testing this annoying bug")
-  if(findUser){
-    const checkWishlist = findUser.wishList.find((productID)=> productID.toString() == productId.toString())
-    console.log(checkWishlist, "na me be this")
-    if(checkWishlist){
-      const isremovedFromWishList = await userModel.findByIdAndUpdate(id, {$pull: {wishList: productId}}, {new: true})
-      if(isremovedFromWishList){
-        return res.json(isremovedFromWishList)
-      }
-      
-    }else{
-      return res.json({msg: "product not in cart"})
-    }
-  }
-  } catch (error) {
-    res.json(error.message)
-  }
-  
-}
+    const findUser = await userModel.findById(id);
 
-module.exports = { uploadProduct, getProducts, getProduct, updateProduct, addToWishlist, removeFromWishlist };
+    if (findUser) {
+      const checkWishlist = findUser.wishList.find(
+        (productID) => productID.toString() == productId.toString()
+      );
+      if (checkWishlist) {
+        const removeDitem = await userModel.findByIdAndUpdate(
+          id,
+          { $pull: { wishList: checkWishlist } },
+          { new: true }
+        );
+        if (removeDitem) {
+          return res.json(removeDitem);
+        }
+        //return res.json({ msg: "you have already added this item" });
+      } else {
+        const isaddToWishList = await userModel
+          .findByIdAndUpdate(
+            id,
+            { $push: { wishList: productId } },
+            { new: true }
+          )
+          .populate("wishList");
+        if (isaddToWishList) {
+          return res.json(isaddToWishList);
+        }
+      }
+    }
+  } catch (error) {
+    res.json(error.message);
+  }
+};
+//remove item from wishlist
+const removeFromWishlist = async (req, res) => {
+  const id = req.id;
+  const productId = req.body.id;
+  try {
+    const findUser = await userModel.findById(id);
+    if (findUser) {
+      const checkWishlist = findUser.wishList.find(
+        (productID) => productID.toString() == productId.toString()
+      );
+      if (checkWishlist) {
+        const isremovedFromWishList = await userModel.findByIdAndUpdate(
+          id,
+          { $pull: { wishList: productId } },
+          { new: true }
+        );
+        if (isremovedFromWishList) {
+          return res.json(isremovedFromWishList);
+        }
+      } else {
+        return res.json({ msg: "product not in cart" });
+      }
+    }
+  } catch (error) {
+    res.json(error.message);
+  }
+};
+
+const addToCart = async (req, res) => {
+  const id = req.id;
+  const productId = req.body?.id;
+  try {
+    const findUser = await userModel.findById(id);
+    if (findUser) {
+      const checkCart = findUser.cart.find(
+        (productID) => productID.toString() == productId.toString()
+      );
+      console.log(checkCart);
+      if (checkCart) {
+        const newCart = await userModel.findByIdAndUpdate(
+          id,
+          { $pull: { cart: productId } },
+          { new: true }
+        ).populate('cart')
+        if (newCart) {
+          return res.json(newCart);
+        }
+      } else {
+        const addToCart = await userModel.findByIdAndUpdate(
+          id,
+          { $push: { cart: productId } },
+          { new: true }
+        ).populate('cart')
+        if (addToCart) {
+          return res.json(addToCart);
+        }
+      }
+    }
+  } catch (error) {
+    return res.json(error.message);
+  }
+};
+
+module.exports = {
+  uploadProduct,
+  getProducts,
+  getProduct,
+  updateProduct,
+  addToWishlist,
+  removeFromWishlist,
+  addToCart,
+};

@@ -6,7 +6,8 @@ const {
   getProduct,
   updateProduct,
   addToWishlist,
-  removeFromWishlist
+  removeFromWishlist,
+  addToCart
 } = require("../controllers/productControllers");
 const { authMiddleWare } = require("../helpers/middlewares");
 
@@ -17,5 +18,6 @@ productRouter.patch("/:id", updateProduct);
 productRouter.patch("/addToWishlist", authMiddleWare, addToWishlist);
 productRouter.put("/add", authMiddleWare, addToWishlist)
 productRouter.put("/remove", authMiddleWare, removeFromWishlist)
+productRouter.put("/addtocart",authMiddleWare, addToCart)
 
 module.exports = productRouter;

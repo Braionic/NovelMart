@@ -29,6 +29,12 @@ var userSchema = new mongoose.Schema(
         ref: "product",
       },
     ],
+    cart: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "product",
+      },
+    ],
     role: {
       type: String,
       default: "user",
@@ -45,7 +51,7 @@ var userSchema = new mongoose.Schema(
       type: Date,
     },
     resetPasswordToken: String,
-    passwordTokenExpiration : Date
+    passwordTokenExpiration: Date,
   },
   { timestamps: true }
 );
@@ -66,12 +72,12 @@ userSchema.methods.isPasswordMatched = function (password) {
 };
 userSchema.methods.generateToken = async function () {
   const token = crypto.randomBytes(20).toString("hex");
-  this.passwordTokenExpiration = Date.now() + 10 * 60 * 1000
+  this.passwordTokenExpiration = Date.now() + 10 * 60 * 1000;
   this.resetPasswordToken = crypto
     .createHash("sha256")
     .update(token)
     .digest("hex");
-console.log(this.resetPasswordToken, "here i am")
+  console.log(this.resetPasswordToken, "here i am");
   return token;
 };
 //Export the model
