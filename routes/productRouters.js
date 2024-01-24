@@ -7,7 +7,8 @@ const {
   updateProduct,
   addToWishlist,
   removeFromWishlist,
-  addToCart
+  addToCart,
+  rateProduct
 } = require("../controllers/productControllers");
 const { authMiddleWare } = require("../helpers/middlewares");
 
@@ -18,6 +19,7 @@ productRouter.patch("/:id", updateProduct);
 productRouter.patch("/addToWishlist", authMiddleWare, addToWishlist);
 productRouter.put("/add", authMiddleWare, addToWishlist)
 productRouter.put("/remove", authMiddleWare, removeFromWishlist)
-productRouter.put("/addtocart",authMiddleWare, addToCart)
+productRouter.put("/addtocart", authMiddleWare, addToCart)
+productRouter.put("/rateProduct", rateProduct)
 
 module.exports = productRouter;

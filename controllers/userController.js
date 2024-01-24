@@ -45,7 +45,11 @@ const adminSignupController = async (req, res) => {
 
   try {
     const savedData = await User.save();
-    res.json(savedData);
+    if (savedData) {
+      savedData.role = "admin";
+      await User.save();
+      res.json(savedData);
+    }
   } catch (error) {
     res.json(`error: ${error}`);
   }
@@ -304,7 +308,6 @@ const passwordTokenCheck = async (req, res) => {
   }
 };
 
-
 module.exports = {
   logoutHandler,
   adminSignupController,
@@ -320,5 +323,4 @@ module.exports = {
   changePassword,
   resetPasswordToken,
   passwordTokenCheck,
- 
 };

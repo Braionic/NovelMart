@@ -1,9 +1,9 @@
 const isIdValid = require("../helpers/helperFunctions");
-const productModel = require("../models/productModel");
 const Product = require("../models/productModel");
 const slugify = require("slugify");
 const userModel = require("../models/userModel");
 const { default: mongoose } = require("mongoose");
+const productModel = require("../models/productModel");
 
 //Upload Product
 const uploadProduct = async (req, res) => {
@@ -181,20 +181,16 @@ const addToCart = async (req, res) => {
       );
       console.log(checkCart);
       if (checkCart) {
-        const newCart = await userModel.findByIdAndUpdate(
-          id,
-          { $pull: { cart: productId } },
-          { new: true }
-        ).populate('cart')
+        const newCart = await userModel
+          .findByIdAndUpdate(id, { $pull: { cart: productId } }, { new: true })
+          .populate("cart");
         if (newCart) {
           return res.json(newCart);
         }
       } else {
-        const addToCart = await userModel.findByIdAndUpdate(
-          id,
-          { $push: { cart: productId } },
-          { new: true }
-        ).populate('cart')
+        const addToCart = await userModel
+          .findByIdAndUpdate(id, { $push: { cart: productId } }, { new: true })
+          .populate("cart");
         if (addToCart) {
           return res.json(addToCart);
         }
@@ -202,6 +198,44 @@ const addToCart = async (req, res) => {
     }
   } catch (error) {
     return res.json(error.message);
+  }
+};
+
+const rateProduct = async (req, res) => {
+  const { star, comment, userId, productId } = req.body;
+
+  try {
+    const findProduct = await productModel.findById(productId);
+    if (findProduct) {
+      console.log(findProduct, "this is product");
+      const checkForRating = findProduct.ratings.find(
+        (pid) => pid.postedBy.toString() === userId.toString()
+      );
+      if (checkForRating) {
+        const updaterating = await productModel.updateOne(
+          { ratings: { $elemMatch: checkForRating } },
+          { $set: { "ratings.$.stars": star} },
+          { new: true }
+        );
+        res.json(updaterating);
+      } else {
+        const postRating = await productModel.findByIdAndUpdate(
+          productId,
+          {
+            $push: {
+              ratings: { stars: star, comment: comment, postedBy: userId },
+            },
+          },
+          { new: true }
+        );
+        console.log(postRating);
+        if (postRating) {
+          res.json(postRating);
+        }
+      }
+    }
+  } catch (error) {
+    console.log(error.message);
   }
 };
 
@@ -213,4 +247,5 @@ module.exports = {
   addToWishlist,
   removeFromWishlist,
   addToCart,
+  rateProduct,
 };
