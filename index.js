@@ -12,6 +12,7 @@ const blogRouter = require("./routes/blogRouters");
 const productCategoryRouter = require("./routes/productCategoryRouters");
 const blogCategoryRouter = require('./routes/blogCategoryRouter')
 const brandRouter = require('./routes/brandRouter')
+const couponRouter = require('./routes/couponRouter')
 
 db(express, app, mongoose);
 app.use(cookieParser());
@@ -24,3 +25,4 @@ app.use("/api/blog/", blogRouter);
 app.use("/api/productCategory", productCategoryRouter);
 app.use('/api/blogcategory', blogCategoryRouter)
 app.use('/api/brand/', brandRouter)
+app.use('/api/coupon', couponRouter)
