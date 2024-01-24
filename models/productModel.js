@@ -44,6 +44,7 @@ const ProductSchema = new mongoose.Schema(
         postedBy: mongoose.Schema.Types.ObjectId,
       },
     ],
+    actualRating: Number,
     category: {
       type: String,
     },

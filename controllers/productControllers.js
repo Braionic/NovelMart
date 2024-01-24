@@ -214,7 +214,7 @@ const rateProduct = async (req, res) => {
       if (checkForRating) {
         const updaterating = await productModel.updateOne(
           { ratings: { $elemMatch: checkForRating } },
-          { $set: { "ratings.$.stars": star} },
+          { $set: { "ratings.$.stars": star } },
           { new: true }
         );
         res.json(updaterating);
@@ -233,6 +233,14 @@ const rateProduct = async (req, res) => {
           res.json(postRating);
         }
       }
+      const numOfRatings = findProduct.ratings.length;
+      const totalRatings = findProduct.ratings.map((item)=> item.stars)
+      const SumTotalRating = totalRatings.reduce((prev, curr)=> prev+curr);
+      const actualRating = SumTotalRating/numOfRatings
+      const toPrecision = actualRating.toPrecision(2)
+      findProduct.actualRating = toPrecision
+      const ratingSaved = await findProduct.save()
+      console.log(ratingSaved)
     }
   } catch (error) {
     console.log(error.message);
