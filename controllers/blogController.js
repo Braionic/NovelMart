@@ -1,4 +1,5 @@
 const { json } = require("express");
+const fs = require("fs");
 const blogModel = require("../models/BlogModel");
 const { isValidObjectId, default: mongoose } = require("mongoose");
 const { isIdValid } = require("../helpers/helperFunctions");
@@ -7,6 +8,7 @@ const {
   findById,
   findByIdAndUpdate,
 } = require("../models/productModel");
+const uploadImage = require("../helpers/cloudinary");
 
 const postBlog = async (req, res) => {
   try {
@@ -80,6 +82,7 @@ const updateBlog = async (req, res) => {
     console.log(error);
   }
 };
+
 //Delete a blog post
 const deleteBlog = async (req, res) => {
   const { id } = req.params;
@@ -98,6 +101,7 @@ const deleteBlog = async (req, res) => {
   }
 };
 
+//like a blog post
 const likeBlogPost = async (req, res) => {
   const blogId = req.body?.id;
   const user = req.id;
@@ -193,6 +197,32 @@ const dislikeBlogPost = async (req, res) => {
     console.log(error);
   }
 };
+
+const uploadcategoryImage = async (req, res) => {
+  try {
+    const uploader = (path) => uploadImage(path, "images");
+    const files = req.files;
+    const blogId = req.params.id;
+    const url = [];
+    for (const file of files) {
+      const imageUrl = await uploader(file.path);
+      url.push(imageUrl);
+      console.log(file.path);
+      fs.unlinkSync(file.path);
+    }
+    console.log(url, "urlllllll");
+    const uploadimage = await blogModel.findByIdAndUpdate(
+      blogId,
+      { imageURL: url.map((uri) => uri) },
+      { new: true }
+    );
+    if (uploadimage) {
+      res.json(uploadimage);
+    }
+  } catch (error) {
+    res.json(error);
+  }
+};
 module.exports = {
   postBlog,
   getBlogs,
@@ -201,4 +231,5 @@ module.exports = {
   deleteBlog,
   likeBlogPost,
   dislikeBlogPost,
+  uploadcategoryImage,
 };

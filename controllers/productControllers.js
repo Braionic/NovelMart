@@ -1,9 +1,11 @@
 const isIdValid = require("../helpers/helperFunctions");
+const fs = require('fs')
 const Product = require("../models/productModel");
 const slugify = require("slugify");
 const userModel = require("../models/userModel");
 const { default: mongoose } = require("mongoose");
 const productModel = require("../models/productModel");
+const uploadImage = require("../helpers/cloudinary");
 
 //Upload Product
 const uploadProduct = async (req, res) => {
@@ -234,19 +236,43 @@ const rateProduct = async (req, res) => {
         }
       }
       const numOfRatings = findProduct.ratings.length;
-      const totalRatings = findProduct.ratings.map((item)=> item.stars)
-      const SumTotalRating = totalRatings.reduce((prev, curr)=> prev+curr);
-      const actualRating = SumTotalRating/numOfRatings
-      const toPrecision = actualRating.toPrecision(2)
-      findProduct.actualRating = toPrecision
-      const ratingSaved = await findProduct.save()
-      console.log(ratingSaved)
+      const totalRatings = findProduct.ratings.map((item) => item.stars);
+      const SumTotalRating = totalRatings.reduce((prev, curr) => prev + curr);
+      const actualRating = SumTotalRating / numOfRatings;
+      const toPrecision = actualRating.toPrecision(2);
+      findProduct.actualRating = toPrecision;
+      const ratingSaved = await findProduct.save();
+      console.log(ratingSaved);
     }
   } catch (error) {
     console.log(error.message);
   }
 };
 
+const uploadProductImage = async (req, res) => {
+  try {
+    const uploader = (path) => uploadImage(path, "images");
+    const files = req.files;
+    const productId = req.params.id;
+    const url = [];
+    for (const file of files) {
+      const imageUrl = await uploader(file.path);
+      url.push(imageUrl);
+      fs.unlinkSync(file.path)
+    }
+    console.log(url, "urlllllll");
+    const uploadimage = await productModel.findByIdAndUpdate(
+      productId,
+      { imageURL: url.map((uri) => uri) },
+      { new: true }
+    );
+    if (uploadimage) {
+      res.json(uploadimage);
+    }
+  } catch (error) {
+    res.json(error.message);
+  }
+};
 module.exports = {
   uploadProduct,
   getProducts,
@@ -256,4 +282,5 @@ module.exports = {
   removeFromWishlist,
   addToCart,
   rateProduct,
+  uploadProductImage,
 };

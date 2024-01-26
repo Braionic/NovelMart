@@ -34,9 +34,7 @@ const ProductSchema = new mongoose.Schema(
       lowercase: true,
     },
     unit: String,
-    imageURL: {
-      type: String,
-    },
+    imageURL: [],
     ratings: [
       {
         stars: Number,

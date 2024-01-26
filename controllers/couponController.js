@@ -1,3 +1,4 @@
+const uploadImage = require("../helpers/cloudinary");
 const CouponModel = require("../models/couponModels");
 
 const createCoupon = async (req, res) => {
@@ -33,4 +34,16 @@ const deleteCoupon = async (req, res) => {
     res.json(error.message);
   }
 };
-module.exports = { createCoupon, UpdateCoupon, deleteCoupon };
+
+const getAllCoupons = async (req, res) => {
+  try {
+    const allCoupons = await CouponModel.find({});
+    uploadImage()
+    if (allCoupons) {
+      res.json(allCoupons);
+    }
+  } catch (error) {
+    res.json(error.message);
+  }
+};
+module.exports = { createCoupon, UpdateCoupon, deleteCoupon, getAllCoupons };
