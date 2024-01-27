@@ -15,6 +15,9 @@ const {
   changePassword,
   resetPasswordToken,
   passwordTokenCheck,
+  adminSigninController,
+  getWishlist,
+  saveAddress,
 } = require("../controllers/userController");
 
 router.get("/", (req, res) => {
@@ -23,6 +26,7 @@ router.get("/", (req, res) => {
 router.post("/signup", signupController);
 router.post("/adminSignup", signupController);
 router.post("/signin", signinController);
+router.post("/admin", adminSigninController)
 router.post("/refresh", refreshController);
 router.get("/all-users", authMiddleWare, isAdmin, allUsers);
 router.get("/user/:id", authMiddleWare, user);
@@ -33,6 +37,8 @@ router.delete("/deleteUser/:id", authMiddleWare, isAdmin, deleteUser);
 router.patch("/updatePassword", authMiddleWare, changePassword)
 router.post("/resetPasswordToken", resetPasswordToken)
 router.post("/resetPasswordToken/:token", passwordTokenCheck)
+router.get("/wishlist", getWishlist)
+router.post("/updateAddress/:id", saveAddress)
 router.post("/logout", logoutHandler);
 
 module.exports = router;

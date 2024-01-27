@@ -1,11 +1,12 @@
 const isIdValid = require("../helpers/helperFunctions");
-const fs = require('fs')
+const fs = require("fs");
 const Product = require("../models/productModel");
 const slugify = require("slugify");
 const userModel = require("../models/userModel");
 const { default: mongoose } = require("mongoose");
 const productModel = require("../models/productModel");
 const uploadImage = require("../helpers/cloudinary");
+const cartModel = require("../models/cartModel");
 
 //Upload Product
 const uploadProduct = async (req, res) => {
@@ -172,6 +173,7 @@ const removeFromWishlist = async (req, res) => {
   }
 };
 
+//add product to cart
 const addToCart = async (req, res) => {
   const id = req.id;
   const productId = req.body?.id;
@@ -202,7 +204,7 @@ const addToCart = async (req, res) => {
     return res.json(error.message);
   }
 };
-
+//rate product
 const rateProduct = async (req, res) => {
   const { star, comment, userId, productId } = req.body;
 
@@ -248,7 +250,7 @@ const rateProduct = async (req, res) => {
     console.log(error.message);
   }
 };
-
+//upload product images
 const uploadProductImage = async (req, res) => {
   try {
     const uploader = (path) => uploadImage(path, "images");
@@ -258,7 +260,7 @@ const uploadProductImage = async (req, res) => {
     for (const file of files) {
       const imageUrl = await uploader(file.path);
       url.push(imageUrl);
-      fs.unlinkSync(file.path)
+      fs.unlinkSync(file.path);
     }
     console.log(url, "urlllllll");
     const uploadimage = await productModel.findByIdAndUpdate(
@@ -273,6 +275,54 @@ const uploadProductImage = async (req, res) => {
     res.json(error.message);
   }
 };
+
+// createCart
+const cart = async (req, res) => {
+  const id = req.id;
+  const cart = req.body.cart;
+  try {
+    const user = await userModel.findById(id);
+    if (!user) {
+      return res.json("no user was found");
+    }
+    const checkCart = await cartModel.findOne({ postedby: user._id });
+    if (checkCart) {
+      checkCart.remove();
+    }
+    const products = [];
+    for (let i = 0; i < cart.length; i++) {
+      let object = {};
+      object.product = new mongoose.Types.ObjectId(cart[i].id);
+      object.count = cart[i].count;
+      object.color = cart[i].color;
+      const productPrice = await productModel
+        .findById(cart[i].id)
+        .select("price")
+        .exec();
+      console.log(productPrice.price);
+      object.price = productPrice.price;
+      products.push(object);
+    }
+    const postedBy = new mongoose.Types.ObjectId(id);
+    let total = 0;
+
+    for (let i = 0; i < products.length; i++) {
+      console.log(products[i]);
+      total = total + products[i].price * products[i].count;
+    }
+    const saveCart = new cartModel({
+      products: products,
+      subTotal: total,
+      postedBy: postedBy,
+    });
+    const cartsave = await (await saveCart.save()).populate("products");
+    if (cartsave) {
+      res.json(cartsave);
+    }
+  } catch (error) {
+    res.json({ msg: error.message });
+  }
+};
 module.exports = {
   uploadProduct,
   getProducts,
@@ -283,4 +333,5 @@ module.exports = {
   addToCart,
   rateProduct,
   uploadProductImage,
+  cart,
 };

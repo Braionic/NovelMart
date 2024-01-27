@@ -165,6 +165,57 @@ const signinController = async (req, res) => {
   }
 };
 
+//signin an Admin
+
+const adminSigninController = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    if (!email || !password) {
+      res.json({ msg: "user and password field should not be empty" });
+    } else {
+      const isAdmin = await userModel.findOne({ email: email });
+      if (isAdmin.role !== "admin") {
+        return res.json("you are not authourized");
+      }
+      if (isAdmin) {
+        console.log(isAdmin);
+
+        if (isAdmin.isPasswordMatched(password)) {
+          try {
+            const updatedData = await userModel.findOneAndUpdate(
+              { email: email },
+              { refreshToken: await generateRefreshToken(isAdmin._id) },
+              { new: true }
+            );
+            console.log(updatedData);
+            if (updatedData) {
+              res.cookie("refreshToken", updatedData.refreshToken, {
+                maxAge: 24 * 60 * 60 * 1000,
+                httpOnly: true,
+              });
+            } else {
+              console.log("not updated");
+            }
+          } catch (error) {
+            console.log(error);
+          }
+
+          return res.json({
+            data: isAdmin,
+            token: generateToken(isAdmin?._id),
+          });
+        } else {
+          res.json("incorrect password");
+        }
+      } else {
+        res.json("you are not an Admin, please signup");
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 //unblock a user
 const unblockUser = (req, res) => {
   const id = req.params.id;
@@ -213,14 +264,15 @@ const updateUser = (req, res) => {
   if (!isIdValid(id)) {
     return res.status(404).json({ msg: "you entered an invalid id" });
   }
-  const { name, email, mobile } = req.body;
+  const { name, email, mobile, role } = req.body;
   const incomingDetails = {
     name: name && name,
     email: email && email,
     mobile: mobile && mobile,
+    role: role && role,
   };
   userModel
-    .findOneAndUpdate({ _id: id }, incomingDetails)
+    .findOneAndUpdate({ _id: id }, incomingDetails, { new: true })
     .then((user) => {
       if (!user) {
         return res.status(404).json({ msg: "user not found" });
@@ -308,6 +360,22 @@ const passwordTokenCheck = async (req, res) => {
   }
 };
 
+const getWishlist = async (req, res)=>{
+  const wishlist = await userModel.findById(req.body.id).populate('wishList')
+  if(wishlist){
+    res.json(wishlist)
+  }
+}
+
+const saveAddress = async (req, res)=> {
+  console.log(req.params.id)
+  const {id} = req.params
+  const {address} = req.body
+  const updateAdress = await userModel.findOneAndUpdate({_id: new mongoose.Types.ObjectId(id)}, {address: address}, {new: true})
+  if(updateAdress){
+    res.json(updateAdress)
+  }
+}
 module.exports = {
   logoutHandler,
   adminSignupController,
@@ -323,4 +391,7 @@ module.exports = {
   changePassword,
   resetPasswordToken,
   passwordTokenCheck,
+  adminSigninController,
+  getWishlist,
+  saveAddress
 };

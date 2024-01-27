@@ -11,7 +11,6 @@ const {
 } = require("../controllers/blogController");
 const { authMiddleWare } = require("../helpers/middlewares");
 const {
-  resizeProductImage,
   resizecategoryImage,
   upload,
 } = require("../helpers/uploadImages");

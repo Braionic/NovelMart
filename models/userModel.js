@@ -39,6 +39,7 @@ var userSchema = new mongoose.Schema(
       type: String,
       default: "user",
     },
+    address: String,
     isBlocked: {
       type: Boolean,
       default: false,

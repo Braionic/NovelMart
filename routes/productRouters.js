@@ -9,7 +9,8 @@ const {
   removeFromWishlist,
   addToCart,
   rateProduct,
-  uploadProductImage
+  uploadProductImage,
+  cart
 } = require("../controllers/productControllers");
 const { authMiddleWare } = require("../helpers/middlewares");
 const { upload, resizeProductImage } = require("../helpers/uploadImages");
@@ -24,5 +25,6 @@ productRouter.put("/remove", authMiddleWare, removeFromWishlist)
 productRouter.put("/addtocart", authMiddleWare, addToCart)
 productRouter.put("/rateProduct", rateProduct)
 productRouter.post("/uploadImage/:id", upload.array('images', 10), resizeProductImage, uploadProductImage)
+productRouter.post("/cart", authMiddleWare, cart)
 
 module.exports = productRouter;
