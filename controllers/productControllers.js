@@ -7,6 +7,7 @@ const { default: mongoose } = require("mongoose");
 const productModel = require("../models/productModel");
 const uploadImage = require("../helpers/cloudinary");
 const cartModel = require("../models/cartModel");
+const CouponModel = require("../models/couponModels");
 
 //Upload Product
 const uploadProduct = async (req, res) => {
@@ -285,7 +286,8 @@ const cart = async (req, res) => {
     if (!user) {
       return res.json("no user was found");
     }
-    const checkCart = await cartModel.findOne({ postedby: user._id });
+    const checkCart = await cartModel.findOne({ orderBy: user._id });
+    console.log(checkCart);
     if (checkCart) {
       checkCart.remove();
     }
@@ -303,7 +305,7 @@ const cart = async (req, res) => {
       object.price = productPrice.price;
       products.push(object);
     }
-    const postedBy = new mongoose.Types.ObjectId(id);
+    const orderBy = new mongoose.Types.ObjectId(id);
     let total = 0;
 
     for (let i = 0; i < products.length; i++) {
@@ -313,7 +315,7 @@ const cart = async (req, res) => {
     const saveCart = new cartModel({
       products: products,
       subTotal: total,
-      postedBy: postedBy,
+      orderBy: orderBy,
     });
     const cartsave = await (await saveCart.save()).populate("products");
     if (cartsave) {
@@ -323,6 +325,65 @@ const cart = async (req, res) => {
     res.json({ msg: error.message });
   }
 };
+
+const getUserCart = async (req, res) => {
+  console.log(req.id);
+  try {
+    const getItems = await cartModel
+      .findOne({ orderBy: req.id })
+      .populate("products.product", "orderBy");
+    if (getItems) {
+      res.json(getItems);
+    } else {
+      res.json({ msg: "couldn't find item" });
+    }
+  } catch (error) {
+    res.json({ msg: error.message });
+  }
+};
+
+const emptyCart = async (req, res) => {
+  const id = req.id;
+  try {
+    const userCart = await cartModel.findOneAndDelete({ orderBy: id });
+    if (userCart) {
+      return res.json(userCart);
+    } else {
+      res.json({ msg: "cart is currently empty" });
+    }
+  } catch (error) {
+    return res.jason({ msg: error.message });
+  }
+};
+
+const applyDiscount = async (req, res) => {
+  try {
+    const { couponCode } = req.body;
+    const isValidCoupon = await CouponModel.findOne({ title: couponCode });
+
+    if (isValidCoupon === null) {
+      return res.json({ msg: "invalid Coupon" });
+    }
+    if (isValidCoupon.discount <= 0) {
+      return res.json({ msg: "coupon is empty" });
+    }
+
+    const { subTotal } = await cartModel.findOne({ orderBy: req.id });
+    let priceAfterDiscount =
+      subTotal - (subTotal * isValidCoupon.discount) / 100;
+    const updateCart = await cartModel.findOneAndUpdate(
+      { orderBy: req.id },
+      { priceAfterDiscount },
+      { new: true }
+    );
+    if (updateCart) {
+      res.json(updateCart);
+    }
+  } catch (error) {
+    res.json({ msg: error.message });
+  }
+};
+
 module.exports = {
   uploadProduct,
   getProducts,
@@ -334,4 +395,7 @@ module.exports = {
   rateProduct,
   uploadProductImage,
   cart,
+  getUserCart,
+  emptyCart,
+  applyDiscount,
 };

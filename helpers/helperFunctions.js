@@ -1,9 +1,9 @@
 const { isValidObjectId } = require("mongoose");
 const nodemailer = require('nodemailer')
 
-const isIdValid = (userId) => {
+const isIdValid = async (userId) => {
   console.log({ msg: userId, msg2: "testing" });
-  const isValid = isValidObjectId(userId);
+  const isValid = await isValidObjectId(userId);
   return isValid
 };
 
