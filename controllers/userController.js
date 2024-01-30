@@ -431,6 +431,22 @@ const placeOrder = async (req, res) => {
   }
 };
 
+
+const getOrder = async (req, res)=>{
+  try {
+    const userOrder = await orderModel.findOne({orderBy: req.id})
+    console.log(req.id)
+    if(userOrder){
+      res.json(userOrder)
+    }else{
+      console.log(userOrder)
+    }
+  } catch (error) {
+    res.json(error.message)
+  }
+}
+
+
 module.exports = {
   logoutHandler,
   adminSignupController,
@@ -450,4 +466,5 @@ module.exports = {
   getWishlist,
   saveAddress,
   placeOrder,
+  getOrder
 };

@@ -19,6 +19,7 @@ const {
   getWishlist,
   saveAddress,
   placeOrder,
+  getOrder,
 } = require("../controllers/userController");
 
 router.get("/", (req, res) => {
@@ -41,6 +42,7 @@ router.post("/resetPasswordToken/:token", passwordTokenCheck)
 router.get("/wishlist", getWishlist)
 router.post("/updateAddress/:id", saveAddress)
 router.post("/cart/placeorder",authMiddleWare, placeOrder)
+router.get("/user-order",authMiddleWare, getOrder)
 router.post("/logout", logoutHandler);
 
 module.exports = router;
