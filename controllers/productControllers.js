@@ -278,7 +278,7 @@ const uploadProductImage = async (req, res) => {
 };
 
 // createCart
-const cart = async (req, res) => {
+const createCart = async (req, res) => {
   const id = req.id;
   const cart = req.body.cart;
   try {
@@ -369,15 +369,18 @@ const applyDiscount = async (req, res) => {
     }
 
     const { subTotal } = await cartModel.findOne({ orderBy: req.id });
-    let priceAfterDiscount =
-      subTotal - (subTotal * isValidCoupon.discount) / 100;
+    let priceAfterDiscount = (
+      subTotal -
+      (subTotal * isValidCoupon.discount) / 100
+    ).toFixed(2);
+
     const updateCart = await cartModel.findOneAndUpdate(
       { orderBy: req.id },
       { priceAfterDiscount },
       { new: true }
     );
     if (updateCart) {
-      res.json(updateCart);
+      res.json(priceAfterDiscount);
     }
   } catch (error) {
     res.json({ msg: error.message });
@@ -394,7 +397,7 @@ module.exports = {
   addToCart,
   rateProduct,
   uploadProductImage,
-  cart,
+  createCart,
   getUserCart,
   emptyCart,
   applyDiscount,

@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose"); // Erase if already required
 
 // Declare the Schema of the Mongo model
-var userSchema = new mongoose.Schema({
+var orderSchema = new mongoose.Schema({
   products: [
     {
       product: {
@@ -13,9 +13,13 @@ var userSchema = new mongoose.Schema({
       count: Number,
     },
   ],
-  subTotal: Number,
-  priceAfterDiscount: Number,
-
+  paymentIntent: {},
+orderStatus: {
+    type: String,
+    default: "On Hold",
+    enum: ["Cash on Delivery", "Processing", "Completed", "On Hold"]
+   
+},
   orderBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
@@ -23,4 +27,4 @@ var userSchema = new mongoose.Schema({
 }, {timestamps: true});
 
 //Export the model
-module.exports = mongoose.model("cart", userSchema);
+module.exports = mongoose.model("order", orderSchema);

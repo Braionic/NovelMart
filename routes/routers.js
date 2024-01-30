@@ -18,6 +18,7 @@ const {
   adminSigninController,
   getWishlist,
   saveAddress,
+  placeOrder,
 } = require("../controllers/userController");
 
 router.get("/", (req, res) => {
@@ -39,6 +40,7 @@ router.post("/resetPasswordToken", resetPasswordToken)
 router.post("/resetPasswordToken/:token", passwordTokenCheck)
 router.get("/wishlist", getWishlist)
 router.post("/updateAddress/:id", saveAddress)
+router.post("/cart/placeorder",authMiddleWare, placeOrder)
 router.post("/logout", logoutHandler);
 
 module.exports = router;

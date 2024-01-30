@@ -1,10 +1,15 @@
 const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
+const uniqid = require("uniqid");
 const userModel = require("../models/userModel");
 const { isIdValid, sendEmail } = require("../helpers/helperFunctions");
 const generateRefreshToken = require("../helpers/generateRefreshToken");
 const crypto = require("crypto");
 const generateToken = require("../helpers/generateToken");
 const jwt = require("jsonwebtoken");
+const cartModel = require("../models/cartModel");
+const orderModel = require("../models/orderModel");
+const productModel = require("../models/productModel");
 
 //Generate refresh token
 const refreshController = async (req, res) => {
@@ -360,23 +365,71 @@ const passwordTokenCheck = async (req, res) => {
   }
 };
 
-const getWishlist = async (req, res)=>{
-  const wishlist = await userModel.findById(req.body.id).populate('wishList')
-  if(wishlist){
-    res.json(wishlist)
+const getWishlist = async (req, res) => {
+  const wishlist = await userModel.findById(req.body.id).populate("wishList");
+  if (wishlist) {
+    res.json(wishlist);
   }
-}
+};
 
-const saveAddress = async (req, res)=> {
-  console.log(req.params.id)
-  const {id} = req.params
-  const {address} = req.body
-  const updateAdress = await userModel.findOneAndUpdate({_id: new mongoose.Types.ObjectId(id)}, {address: address}, {new: true})
-  if(updateAdress){
-    res.json(updateAdress)
+const saveAddress = async (req, res) => {
+  console.log(req.params.id);
+  const { id } = req.params;
+  const { address } = req.body;
+  const updateAdress = await userModel.findOneAndUpdate(
+    { _id: new mongoose.Types.ObjectId(id) },
+    { address: address },
+    { new: true }
+  );
+  if (updateAdress) {
+    res.json(updateAdress);
   }
-}
+};
 
+const placeOrder = async (req, res) => {
+  const { COD, isCouponApplied } = req.body;
+  if (!COD) {
+    return res.json({ msg: "not a cash on delivery payment" });
+  }
+  try {
+    const user = await userModel.findById(req.id);
+
+    const findInCart = await cartModel.findOne({ orderBy: user._id });
+
+    let finalPrice = 0;
+    if (user.priceAfterDiscount && isCouponApplied) {
+      finalPrice = findInCart.priceAfterDiscount * 100;
+    } else {
+      finalPrice = findInCart.subTotal * 100;
+    }
+    const newOrder = await new orderModel({
+      products: findInCart.products,
+      paymentIntent: {
+        id: uniqid(),
+        status: "Cast on Delivery",
+        amount: finalPrice,
+        method: "COD",
+        created: Date.now(),
+        currency: "NGN",
+      },
+      orderBy: user._id,
+      orderStatus: "Cash on Delivery",
+    }).save();
+
+    const update = findInCart.products.map((item) => {
+      return {
+        updateOne: {
+          filter: { _id: item.product._id },
+          update: { $inc: { quantity: -item.count, sold: +item.count } },
+        },
+      };
+    });
+    const applyUpdate = await productModel.bulkWrite(update, {});
+    res.json({ msg: "successfull" });
+  } catch (error) {
+    return res.json({ msg: error.message });
+  }
+};
 
 module.exports = {
   logoutHandler,
@@ -395,5 +448,6 @@ module.exports = {
   passwordTokenCheck,
   adminSigninController,
   getWishlist,
-  saveAddress
+  saveAddress,
+  placeOrder,
 };

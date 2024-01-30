@@ -46,7 +46,12 @@ const ProductSchema = new mongoose.Schema(
     category: {
       type: String,
     },
+    sold: {
+      type: Number,
+      default: 1
+    }
   },
+  
   { timestamps: true }
 );
 
