@@ -431,21 +431,35 @@ const placeOrder = async (req, res) => {
   }
 };
 
-
-const getOrder = async (req, res)=>{
+const getOrder = async (req, res) => {
   try {
-    const userOrder = await orderModel.findOne({orderBy: req.id})
-    console.log(req.id)
-    if(userOrder){
-      res.json(userOrder)
-    }else{
-      console.log(userOrder)
+    const userOrder = await orderModel.findOne({ orderBy: req.id });
+    console.log(req.id);
+    if (userOrder) {
+      res.json(userOrder);
+    } else {
+      console.log(userOrder);
     }
   } catch (error) {
-    res.json(error.message)
+    res.json(error.message);
   }
-}
+};
 
+const updateOrderStatus = async (req, res) => {
+  const { status } = req.body;
+  try {
+    const updateOrder = await orderModel.findByIdAndUpdate(
+      req.params.id,
+      { paymentIntent: { status: status }, orderStatus: status },
+      { new: true }
+    );
+    if (updateOrder) {
+      res.json(updateOrder);
+    }
+  } catch (error) {
+    res.json(error.message);
+  }
+};
 
 module.exports = {
   logoutHandler,
@@ -466,5 +480,6 @@ module.exports = {
   getWishlist,
   saveAddress,
   placeOrder,
-  getOrder
+  getOrder,
+  updateOrderStatus,
 };
