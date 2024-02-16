@@ -1,11 +1,9 @@
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel");
-const { isValidObjectId } = require("mongoose");
 
 module.exports = {
   authMiddleWare: (req, res, next) => {
     const isTokenPresent = req.headers["authorization"]?.split(" ")[1];
-    console.log(isTokenPresent);
     if (isTokenPresent) {
       jwt.verify(
         isTokenPresent,
@@ -21,8 +19,9 @@ module.exports = {
         }
       );
     } else {
-      console.log("token not present or expired, please sign in");
-      return res.json({ msg: "token not found or expired, please signin again" });
+      return res.json({
+        msg: "token not found or expired, please signin again",
+      });
     }
   },
   isAdmin: async (req, res, next) => {

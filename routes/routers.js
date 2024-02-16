@@ -42,7 +42,7 @@ router.post("/resetPasswordToken", resetPasswordToken)
 router.post("/resetPasswordToken/:token", passwordTokenCheck)
 router.get("/wishlist", getWishlist)
 router.post("/updateAddress/:id", saveAddress)
-router.post("/cart/placeorder",authMiddleWare, placeOrder)
+router.post("/cart/placeorder", authMiddleWare, placeOrder)
 router.get("/user-order",authMiddleWare, getOrder)
 router.put("/update-status/:id",authMiddleWare, isAdmin, updateOrderStatus)
 router.post("/logout", logoutHandler);

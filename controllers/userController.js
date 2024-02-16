@@ -15,12 +15,14 @@ const productModel = require("../models/productModel");
 const refreshController = async (req, res) => {
   console.log(`this is the refresh token ${req.cookies.refreshToken}`);
   if (!req.cookies?.refreshToken) {
-    return res.status(404).json({ msg: "no refresh token" });
+    return res
+      .status(404)
+      .json({ msg: "no refresh token, please sign in again" });
   }
   const refreshToken = req.cookies.refreshToken;
   const user = await userModel.findOne({ refreshToken: refreshToken });
   if (!user) {
-    return res.status(404).json({ msg: "no token was found in the database" });
+    return res.status(404).json({ msg: "no user was found with such token" });
   }
   jwt.verify(refreshToken, process.env.SECRETE_KEY, (err, decode) => {
     if (err) {
@@ -132,8 +134,6 @@ const signinController = async (req, res) => {
     } else {
       const isauser = await userModel.findOne({ email: email });
       if (isauser) {
-        console.log(isauser);
-
         if (isauser.isPasswordMatched(password)) {
           try {
             const updatedData = await userModel.findOneAndUpdate(
@@ -141,7 +141,6 @@ const signinController = async (req, res) => {
               { refreshToken: await generateRefreshToken(isauser._id) },
               { new: true }
             );
-            console.log(updatedData);
             if (updatedData) {
               res.cookie("refreshToken", updatedData.refreshToken, {
                 maxAge: 24 * 60 * 60 * 1000,

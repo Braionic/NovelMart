@@ -25,9 +25,9 @@ const uploadProduct = async (req, res) => {
 };
 //Get all products
 const getProducts = async (req, res) => {
-  console.log(req.query);
   let objQuery = { ...req.query };
-  const filter = ["page", "fields", "sort", "page"];
+  console.log(objQuery, "this is the query");
+  const filter = ["page", "fields", "sort", "limit"];
 
   filter.forEach((el) => delete objQuery[el]);
   objQuery = JSON.stringify(objQuery);
@@ -90,7 +90,6 @@ const getProduct = async (req, res) => {
 // update product
 const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const { title, description } = req.body;
   try {
     const updatedProduct = await Product.findOneAndUpdate(
       { _id: id },
@@ -216,6 +215,7 @@ const rateProduct = async (req, res) => {
       const checkForRating = findProduct.ratings.find(
         (pid) => pid.postedBy.toString() === userId.toString()
       );
+      console.log(checkForRating, "here is the rating checkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
       if (checkForRating) {
         const updaterating = await productModel.updateOne(
           { ratings: { $elemMatch: checkForRating } },
@@ -239,6 +239,7 @@ const rateProduct = async (req, res) => {
         }
       }
       const numOfRatings = findProduct.ratings.length;
+      console.log(numOfRatings, "num of ratings")
       const totalRatings = findProduct.ratings.map((item) => item.stars);
       const SumTotalRating = totalRatings.reduce((prev, curr) => prev + curr);
       const actualRating = SumTotalRating / numOfRatings;
@@ -352,7 +353,7 @@ const emptyCart = async (req, res) => {
       res.json({ msg: "cart is currently empty" });
     }
   } catch (error) {
-    return res.jason({ msg: error.message });
+    return res.json({ msg: error.message });
   }
 };
 

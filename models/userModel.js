@@ -33,13 +33,14 @@ var userSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "product",
-      }
+      },
     ],
     role: {
       type: String,
       default: "user",
     },
     address: String,
+
     isBlocked: {
       type: Boolean,
       default: false,
@@ -59,6 +60,7 @@ var userSchema = new mongoose.Schema(
 
 userSchema.pre("save", function (next) {
   if (!this.isModified("password")) {
+    console.log("true it modified")
     return next();
   }
   console.log(this.password);

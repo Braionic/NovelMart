@@ -22,7 +22,7 @@ const { upload, resizeProductImage } = require("../helpers/uploadImages");
 productRouter.post("/", uploadProduct);
 productRouter.get("/", getProducts);
 productRouter.get("/:id", getProduct);
-productRouter.patch("/:id", updateProduct);
+productRouter.patch("/:id", authMiddleWare, updateProduct);
 productRouter.patch("/addToWishlist", authMiddleWare, addToWishlist);
 productRouter.put("/add", authMiddleWare, addToWishlist)
 productRouter.put("/remove", authMiddleWare, removeFromWishlist)

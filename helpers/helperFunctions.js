@@ -2,10 +2,10 @@ const { isValidObjectId } = require("mongoose");
 const nodemailer = require('nodemailer')
 
 const isIdValid = async (userId) => {
-  console.log({ msg: userId, msg2: "testing" });
   const isValid = await isValidObjectId(userId);
   return isValid
 };
+
 
 const sendEmail = (data, req, res) =>{
 const transport = nodemailer.createTransport({
