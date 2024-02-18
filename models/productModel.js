@@ -20,10 +20,7 @@ const ProductSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
-    color: {
-      type: String,
-      enum: ["green", "blue", "red"],
-    },
+    color: [],
     quantity: {
       type: Number,
       default: 1,
@@ -35,6 +32,7 @@ const ProductSchema = new mongoose.Schema(
     },
     unit: String,
     imageURL: [],
+    tags: [],
     ratings: [
       {
         stars: Number,
@@ -45,6 +43,7 @@ const ProductSchema = new mongoose.Schema(
     actualRating: Number,
     category: {
       type: String,
+      default: 0
     },
     sold: {
       type: Number,

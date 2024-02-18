@@ -5,7 +5,7 @@ const slugify = require("slugify");
 const userModel = require("../models/userModel");
 const { default: mongoose } = require("mongoose");
 const productModel = require("../models/productModel");
-const uploadImage = require("../helpers/cloudinary");
+const {uploadImage, deleteImage} = require("../helpers/cloudinary");
 const cartModel = require("../models/cartModel");
 const CouponModel = require("../models/couponModels");
 
@@ -257,6 +257,7 @@ const uploadProductImage = async (req, res) => {
   try {
     const uploader = (path) => uploadImage(path, "images");
     const files = req.files;
+    console.log(files, "this is the files")
     const productId = req.params.id;
     const url = [];
     for (const file of files) {
@@ -265,19 +266,25 @@ const uploadProductImage = async (req, res) => {
       fs.unlinkSync(file.path);
     }
     console.log(url, "urlllllll");
-    const uploadimage = await productModel.findByIdAndUpdate(
-      productId,
-      { imageURL: url.map((uri) => uri) },
-      { new: true }
-    );
-    if (uploadimage) {
-      res.json(uploadimage);
-    }
+    const images = url.map((uri) => uri)
+    res.json(images)
   } catch (error) {
-    res.json(error.message);
+    res.json({msg: error.message, gigi: "buhjvmhvjh"});
   }
 };
 
+//delete image
+
+const deleteProductImages = async(req, res)=>{
+  try {
+    const deletedImage = await deleteImage(req.params.id, "images")
+   if(deletedImage){
+     res.json({msg: deletedImage, msg2: "hello"})
+   }
+  } catch (error) {
+    res.json({msg: error.message})
+  }
+}
 // createCart
 const createCart = async (req, res) => {
   const id = req.id;
@@ -327,6 +334,8 @@ const createCart = async (req, res) => {
   }
 };
 
+//get user cart
+
 const getUserCart = async (req, res) => {
   console.log(req.id);
   try {
@@ -343,6 +352,7 @@ const getUserCart = async (req, res) => {
   }
 };
 
+//empty cart
 const emptyCart = async (req, res) => {
   const id = req.id;
   try {
@@ -402,4 +412,5 @@ module.exports = {
   getUserCart,
   emptyCart,
   applyDiscount,
+  deleteProductImages
 };
