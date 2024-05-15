@@ -177,8 +177,8 @@ const adminSigninController = async (req, res) => {
     if (!email || !password) {
       res.json({ msg: "user and password field should not be empty" });
     } else {
-      const isAdmin = await userModel.findOne({ email: email });
-      if (isAdmin.role !== "admin") {
+      const isAdmin = await userModel.findOne({ email: email, role: "admin" });
+      if (!isAdmin) {
         return res.json("you are not authourized");
       }
       if (isAdmin) {
@@ -204,15 +204,15 @@ const adminSigninController = async (req, res) => {
             console.log(error);
           }
 
-          return res.json({
+          return res.status(201).json({
             data: isAdmin,
             token: generateToken(isAdmin?._id),
           });
         } else {
-          res.json("incorrect password");
+          res.status(401).json("incorrect password");
         }
       } else {
-        res.json("you are not an Admin, please signup");
+        res.status(401).json("you are not an Admin, please signup");
       }
     }
   } catch (error) {

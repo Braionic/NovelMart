@@ -60,7 +60,7 @@ var userSchema = new mongoose.Schema(
 
 userSchema.pre("save", function (next) {
   if (!this.isModified("password")) {
-    console.log("true it modified")
+    console.log("false it wasn't modified")
     return next();
   }
   console.log(this.password);

@@ -3,6 +3,7 @@ const app = express();
 const mongoose = require("mongoose");
 require("dotenv").config();
 const db = require("./helpers/db");
+const cors = require('cors')
 const authrouter = require("./routes/routers");
 const gencode = require("./helpers/generateKey");
 const cookieParser = require("cookie-parser");
@@ -20,6 +21,7 @@ db(express, app, mongoose);
 app.use(cookieParser());
 app.use(express.json());
 app.use(morgan("dev"));
+app.use(cors())
 
 app.use("/api/user", authrouter);
 app.use("/api/product", productRouter);

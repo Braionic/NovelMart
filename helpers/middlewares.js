@@ -4,6 +4,7 @@ const userModel = require("../models/userModel");
 module.exports = {
   authMiddleWare: (req, res, next) => {
     const isTokenPresent = req.headers["authorization"]?.split(" ")[1];
+    console.log(isTokenPresent)
     if (isTokenPresent) {
       jwt.verify(
         isTokenPresent,
