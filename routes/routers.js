@@ -31,7 +31,7 @@ router.post("/adminSignup", signupController);
 router.post("/signin", signinController);
 router.post("/admin", adminSigninController)
 router.post("/refresh", refreshController);
-router.get("/all-users", authMiddleWare, isAdmin, allUsers);
+router.get("/all-users", allUsers);
 router.get("/user/:id", authMiddleWare, user);
 router.patch("/updateUser/:id", authMiddleWare, updateUser);
 router.patch("/blockUser/:id", authMiddleWare, isAdmin, blockUser);

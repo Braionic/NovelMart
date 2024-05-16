@@ -179,7 +179,7 @@ const adminSigninController = async (req, res) => {
     } else {
       const isAdmin = await userModel.findOne({ email: email, role: "admin" });
       if (!isAdmin) {
-        return res.json("you are not authourized");
+        return res.status(401).json("you are not authourized");
       }
       if (isAdmin) {
         console.log(isAdmin);
