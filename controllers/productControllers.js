@@ -197,6 +197,8 @@ const addToCart = async (req, res) => {
           .populate("cart");
         if (addToCart) {
           return res.json(addToCart);
+        }else{
+          return res.json({msg: "could not update"})
         }
       }
     }
@@ -296,9 +298,7 @@ const createCart = async (req, res) => {
     }
     const checkCart = await cartModel.findOne({ orderBy: user._id });
     console.log(checkCart);
-    if (checkCart) {
-      checkCart.remove();
-    }
+    
     const products = [];
     for (let i = 0; i < cart.length; i++) {
       let object = {};
@@ -325,7 +325,7 @@ const createCart = async (req, res) => {
       subTotal: total,
       orderBy: orderBy,
     });
-    const cartsave = await (await saveCart.save()).populate("products");
+    const cartsave = await (await saveCart.save()).populate("products.product");
     if (cartsave) {
       res.json(cartsave);
     }

@@ -21,6 +21,7 @@ const {
   placeOrder,
   getOrder,
   updateOrderStatus,
+  getAllOrdersController,
 } = require("../controllers/userController");
 
 router.get("/", (req, res) => {
@@ -44,6 +45,7 @@ router.get("/wishlist", getWishlist)
 router.post("/updateAddress/:id", saveAddress)
 router.post("/cart/placeorder", authMiddleWare, placeOrder)
 router.get("/user-order",authMiddleWare, getOrder)
+router.get("/all-orders", authMiddleWare, isAdmin, getAllOrdersController)
 router.put("/update-status/:id",authMiddleWare, isAdmin, updateOrderStatus)
 router.post("/logout", logoutHandler);
 

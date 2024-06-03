@@ -11,7 +11,7 @@ module.exports = {
         process.env.SECRETE_KEY,
         function (err, decoded) {
           if (err) {
-            return res.json({ auth: false, message: err });
+            return res.status(401).json({ auth: false, message: err });
           } else {
             req.id = decoded.id;
             return next();
@@ -20,7 +20,7 @@ module.exports = {
         }
       );
     } else {
-      return res.json({
+      return res.status(404).json({
         msg: "token not found or expired, please signin again",
       });
     }

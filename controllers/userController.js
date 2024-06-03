@@ -252,7 +252,7 @@ const user = (req, res) => {
 
 //create a user account
 const signupController = async (req, res) => {
-  const { name, email, password, mobile } = req.body;
+  //const { name, email, password, mobile } = req.body;
   const User = new userModel(req.body);
   try {
     const savedData = await User.save();
@@ -409,7 +409,7 @@ const placeOrder = async (req, res) => {
         amount: finalPrice,
         method: "COD",
         created: Date.now(),
-        currency: "NGN",
+        currency: "USD",
       },
       orderBy: user._id,
       orderStatus: "Cash on Delivery",
@@ -427,6 +427,17 @@ const placeOrder = async (req, res) => {
     res.json({ msg: "successfull" });
   } catch (error) {
     return res.json({ msg: error.message });
+  }
+};
+
+const getAllOrdersController = async (req, res) => {
+  try {
+    const orders = await orderModel.find({}).populate("products.product").populate("orderBy");
+    if (orders) {
+      return res.json(orders);
+    }
+  } catch (error) {
+    res.json(error);
   }
 };
 
@@ -481,4 +492,5 @@ module.exports = {
   placeOrder,
   getOrder,
   updateOrderStatus,
+  getAllOrdersController
 };

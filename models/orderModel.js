@@ -16,13 +16,12 @@ var orderSchema = new mongoose.Schema({
   paymentIntent: {},
 orderStatus: {
     type: String,
-    default: "On Hold",
-    enum: ["Cash on Delivery", "Processing", "Completed", "On Hold"]
-   
+    default: "Not Processed",
+    enum: ["Cash on Delivery","Not Processed", "Processing", "Completed", "Dispatched", "On Hold"]
 },
   orderBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
+    ref: "User",
   },
 }, {timestamps: true});
 
