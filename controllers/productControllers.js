@@ -18,9 +18,9 @@ const uploadProduct = async (req, res) => {
     const product = new Product(dataObj);
     const savedData = await product.save();
     console.log(savedData);
-    res.status(200).json(dataObj);
+    return res.status(200).json(dataObj);
   } catch (error) {
-    console.log(error);
+    return res.status(403).json(error.message)
   }
 };
 //Get all products
@@ -260,7 +260,7 @@ const uploadProductImage = async (req, res) => {
     const uploader = (path) => uploadImage(path, "images");
     const files = req.files;
     console.log(files, "this is the files")
-    const productId = req.params.id;
+    //const productId = req.params.id;
     const url = [];
     for (const file of files) {
       const imageUrl = await uploader(file.path);
@@ -271,7 +271,7 @@ const uploadProductImage = async (req, res) => {
     const images = url.map((uri) => uri)
     res.json(images)
   } catch (error) {
-    res.json({msg: error.message, gigi: "buhjvmhvjh"});
+    res.json({msg: error.message});
   }
 };
 

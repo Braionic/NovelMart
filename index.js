@@ -16,6 +16,8 @@ const brandRouter = require('./routes/brandRouter')
 const couponRouter = require('./routes/couponRouter')
 const colorRouter = require('./routes/colorRouter');
 const enqRouter = require("./routes/enquiryRouter");
+const { uploadRouter } = require("./routes/uploadRouters");
+
 
 db(express, app, mongoose);
 app.use(cookieParser());
@@ -32,3 +34,4 @@ app.use('/api/brand/', brandRouter)
 app.use('/api/coupon', couponRouter)
 app.use("/api/color", colorRouter)
 app.use("/api/enquiry", enqRouter)
+app.use("/api/upload", uploadRouter)

@@ -27,11 +27,14 @@ const ProductSchema = new mongoose.Schema(
     },
     brand: {
       type: String,
-      enum: ["apple", "google", "gechno", "samsung", "gionee", "tecno"],
       lowercase: true,
     },
     unit: String,
-    imageURL: [],
+    images: [{
+      res: String,
+      public_id: String,
+      asset_id: String
+    }],
     tags: [],
     ratings: [
       {

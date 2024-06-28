@@ -19,15 +19,15 @@ const uploadImage = async (file) => {
   });
 };
 
-const deleteImage = async (file) => {
+const deleteImage = async (id) => {
   return new Promise((resolve) => {
-    cloudinary.uploader.destroy(file, (err, res) => {
-      if (err) return res.status(500).send("delete image error");
+    cloudinary.uploader.destroy(id, (res) => {
       resolve({
-        res: res.secure_url,
-        public_id: res.asset_id,
-        asset_id: res.asset_id,
-      });
+        res
+      },
+    {
+      resource_type: "auto",
+    });
     });
   });
 };
