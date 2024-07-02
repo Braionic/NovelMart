@@ -38,14 +38,25 @@ const getColors = async (req, res) => {
   }
 };
 
+const getSingleColor = async (req, res) => {
+  const getColor = await colorModel.find({
+    title: { $regex: new RegExp("^" + req.query.title.toLowerCase(), "i") },
+  });
+  if (getColor) {
+    return res.json(getColor);
+  }
+};
+
 const deleteColor = async (req, res) => {
   try {
     const delColor = await colorModel.findOneAndDelete(req.params.id);
     if (delColor) {
       res.json(delColor);
-    }else{res.json("no color with such ID was fount")}
+    } else {
+      res.json("no color with such ID was fount");
+    }
   } catch (error) {
     res.json({ msg: error });
   }
 };
-module.exports = { createColor, updateColor, getColors, deleteColor };
+module.exports = { createColor, updateColor, getColors, deleteColor, getSingleColor };
