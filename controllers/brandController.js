@@ -15,17 +15,34 @@ const allBrands = async (req, res) => {
   }
 };
 
+const getSingleBrand = async (req, res) => {
+  console.log("this is the req", req.query)
+  try {
+    const brands = await brandModel.find({title: { $regex: new RegExp("^" + req.query?.title.toLowerCase(), "i") }});
+    if (brands) {
+      res.status(200).json(brands);
+    }
+  } catch (error) {
+    res.status(404).json({ msg: error.message });
+  }
+};
+
 
 const createBrand = async (req, res) => {
     console.log(req.body)
   try {
+    const brandExist = await brandModel.find({title: req.body.title})
+    
+    if(brandExist.length > 0){
+      return res.status(406).json(`${brandExist[0].title} already exist`)
+    }
     const createCategory = new brandModel(req.body);
     const saveCategory = await createCategory.save();
     if (saveCategory) {
-      return res.json(saveCategory);
+      return res.status(201).json(saveCategory);
     }
   } catch (error) {
-    return res.status(500).json(error.message)
+    return res.status(400).json(error.message)
   }
 };
 
@@ -66,4 +83,4 @@ const deleteBrand = async (req, res) => {
     console.log(error.message);
   }
 };
-module.exports = {createBrand, allBrands, updateBrand, deleteBrand}
+module.exports = {createBrand, allBrands, updateBrand, deleteBrand, getSingleBrand}

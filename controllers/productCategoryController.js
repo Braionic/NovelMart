@@ -1,4 +1,5 @@
 const PDCategoryModel = require("../models/productCategoryModel");
+const productModel = require("../models/productModel");
 
 //get all product category
 
@@ -19,10 +20,19 @@ const createCategoty = async (req, res) => {
   const createCategory = new PDCategoryModel(req.body);
   const saveCategory = await createCategory.save();
   if (saveCategory) {
+    console.log(saveCategory)
     return res.json(saveCategory);
   }
 };
 
+//chwck if category name already exist
+
+const getsingleProductCat = async(req, res)=>{
+  const productCat = await PDCategoryModel.find({title: {$regex: new RegExp("^" + req.query.title.toLowerCase(), "i")}})
+  if(productCat){
+    return res.status(201).json(productCat)
+  }
+}
 //update blog category
 
 const updateCategory = async (req, res) => {
@@ -64,4 +74,4 @@ const deleteCategory = async (req, res) => {
     console.log(error.message, "kjhgkljhgv");
   }
 };
-module.exports = { createCategoty, updateCategory, deleteCategory, allCategory };
+module.exports = { createCategoty, updateCategory, deleteCategory, allCategory, getsingleProductCat };
