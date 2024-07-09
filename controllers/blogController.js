@@ -16,10 +16,10 @@ const postBlog = async (req, res) => {
 
     const saveBlog = await blog.save();
     if (saveBlog) {
-      return res.status(400).json(saveBlog);
+      return res.status(200).json(saveBlog);
     }
   } catch (error) {
-    console.log(error);
+    return res.status(404).json(error)
   }
 };
 

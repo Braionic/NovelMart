@@ -1,5 +1,18 @@
 const blogCGModel = require("../models/blogCategoryModel");
 
+const getSingleCat = async (req, res) => {
+  try {
+    const getCat = await blogCGModel.find({
+      title: { $regex: new RegExp("^" + req.query.title.toLowerCase(), "i") },
+    });
+    if (getCat) {
+      return res.json(getCat);
+    }
+  } catch (error) {
+    return res.status()
+  }
+  };
+
 //get all blog categories
 const allCategory = async (req, res) => {
   try {
@@ -69,4 +82,5 @@ module.exports = {
   updateCategory,
   deleteCategory,
   allCategory,
+  getSingleCat
 };

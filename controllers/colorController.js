@@ -7,7 +7,7 @@ const createColor = async (req, res) => {
       return res.json(newColor);
     }
   } catch (error) {
-    res.json({ msg: error });
+    return res.json({ msg: error.message });
   }
 };
 

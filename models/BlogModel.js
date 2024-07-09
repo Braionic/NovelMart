@@ -23,7 +23,11 @@ const blogSchema = new mongoose.Schema(
       type: String,
       default: "Admin",
     },
-    imageURL: [],
+    images: [{
+      res: String,
+      public_id: String,
+      asset_id: String
+    }],
 
     isLiked: {
       type: Boolean,
