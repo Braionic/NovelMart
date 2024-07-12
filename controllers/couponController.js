@@ -38,7 +38,7 @@ const deleteCoupon = async (req, res) => {
 const getAllCoupons = async (req, res) => {
   try {
     const allCoupons = await CouponModel.find({});
-    uploadImage()
+
     if (allCoupons) {
       res.json(allCoupons);
     }
@@ -46,4 +46,15 @@ const getAllCoupons = async (req, res) => {
     res.json(error.message);
   }
 };
-module.exports = { createCoupon, UpdateCoupon, deleteCoupon, getAllCoupons };
+
+const getSingleCoupon = async (req, res) => {
+  const coupon = await CouponModel.find({title: req.query?.title});
+  if (coupon) {
+    return res.json(coupon);
+  }
+  try {
+  } catch (error) {
+    return res.status(404).json(error?.message)
+  }
+};
+module.exports = { createCoupon, UpdateCoupon, deleteCoupon, getAllCoupons, getSingleCoupon };

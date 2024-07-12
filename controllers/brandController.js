@@ -1,8 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const brandModel = require("../models/brandModel");
 
-
-
 //get all blog categories
 const allBrands = async (req, res) => {
   try {
@@ -15,10 +13,23 @@ const allBrands = async (req, res) => {
   }
 };
 
-const getSingleBrand = async (req, res) => {
-  console.log("this is the req", req.query)
+const getOneBrand = async (req, res) => {
   try {
-    const brands = await brandModel.find({title: { $regex: new RegExp("^" + req.query?.title.toLowerCase(), "i") }});
+    const brand = await brandModel.findOne({_id: req.params.id})
+    if (brand) {
+      return res.status(201).json(brand);
+    }
+  } catch (error) {
+   return res.status(404).json(error);
+  }
+};
+
+const getSingleBrand = async (req, res) => {
+  console.log("this is the req", req.query);
+  try {
+    const brands = await brandModel.find({
+      title: { $regex: new RegExp("^" + req.query?.title.toLowerCase(), "i") },
+    });
     if (brands) {
       res.status(200).json(brands);
     }
@@ -27,14 +38,13 @@ const getSingleBrand = async (req, res) => {
   }
 };
 
-
 const createBrand = async (req, res) => {
-    console.log(req.body)
+  console.log(req.body);
   try {
-    const brandExist = await brandModel.find({title: req.body.title})
-    
-    if(brandExist.length > 0){
-      return res.status(406).json(`${brandExist[0].title} already exist`)
+    const brandExist = await brandModel.find({ title: req.body.title });
+
+    if (brandExist.length > 0) {
+      return res.status(406).json(`${brandExist[0].title} already exist`);
     }
     const createCategory = new brandModel(req.body);
     const saveCategory = await createCategory.save();
@@ -42,7 +52,7 @@ const createBrand = async (req, res) => {
       return res.status(201).json(saveCategory);
     }
   } catch (error) {
-    return res.status(400).json(error.message)
+    return res.status(400).json(error.message);
   }
 };
 
@@ -57,14 +67,14 @@ const updateBrand = async (req, res) => {
         new: true,
       }
     );
-   
+
     if (brands) {
       res.json(brands);
     } else {
       res.json({ msg: "Brand not found" });
     }
   } catch (error) {
-    res.json({msg: error.message})
+    res.json({ msg: error.message });
   }
 };
 
@@ -83,4 +93,11 @@ const deleteBrand = async (req, res) => {
     console.log(error.message);
   }
 };
-module.exports = {createBrand, allBrands, updateBrand, deleteBrand, getSingleBrand}
+module.exports = {
+  createBrand,
+  allBrands,
+  updateBrand,
+  deleteBrand,
+  getSingleBrand,
+  getOneBrand
+};
