@@ -432,7 +432,10 @@ const placeOrder = async (req, res) => {
 
 const getAllOrdersController = async (req, res) => {
   try {
-    const orders = await orderModel.find({}).populate("products.product").populate("orderBy");
+    const orders = await orderModel
+      .find({})
+      .populate("products.product")
+      .populate("orderBy");
     if (orders) {
       return res.json(orders);
     }
@@ -471,6 +474,10 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
+
+
+
+
 module.exports = {
   logoutHandler,
   adminSignupController,
@@ -492,5 +499,5 @@ module.exports = {
   placeOrder,
   getOrder,
   updateOrderStatus,
-  getAllOrdersController
+  getAllOrdersController,
 };

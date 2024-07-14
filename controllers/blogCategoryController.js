@@ -9,9 +9,9 @@ const getSingleCat = async (req, res) => {
       return res.json(getCat);
     }
   } catch (error) {
-    return res.status()
+    return res.status();
   }
-  };
+};
 
 //get all blog categories
 const allCategory = async (req, res) => {
@@ -77,10 +77,26 @@ const deleteCategory = async (req, res) => {
     console.log(error.message);
   }
 };
+
+const getSingleCategory = async (req, res) => {
+  console.log("this is the req", req.params.id);
+  try {
+    const brands = await blogCGModel.findById(req.params.id);
+    if (brands) {
+      res.status(200).json(brands);
+    }
+  } catch (error) {
+    res.status(404).json({ msg: error.message });
+  }
+};
+
+
+
 module.exports = {
   createCategory,
   updateCategory,
   deleteCategory,
   allCategory,
-  getSingleCat
+  getSingleCat,
+  getSingleCategory,
 };
