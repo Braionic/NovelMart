@@ -11,7 +11,6 @@ const createEnquiry = async (req, res) => {
 };
 
 //delete enquiry
-
 const deleteEnquiry = async (req, res) => {
   try {
     const deletedEnquiry = await enqModel.findByIdAndDelete(req.params.id);
@@ -22,7 +21,6 @@ const deleteEnquiry = async (req, res) => {
 };
 
 //Get all enquiries
-
 const allEnquiries = async (req, res) => {
   try {
     const enquiries = await enqModel.find({});
@@ -32,14 +30,30 @@ const allEnquiries = async (req, res) => {
   }
 };
 
-//update enquiry
-
-const updateEnquiry = async(req, res)=>{
-    try {
-        const updatedEnquiry = await enqModel.findByIdAndUpdate(req.params.id, req.body, {new: true})
-        res.json(updatedEnquiry)
-    } catch (error) {
-        res.json({msg: error.message})
+//single enquiry
+const singleEnq = async (req, res) => {
+  try {
+    const enq = await enqModel.findById(req?.params.id);
+    if (enq) {
+      return res.json(enq);
     }
-}
-module.exports = { createEnquiry, deleteEnquiry, allEnquiries, updateEnquiry };
+  } catch (error) {
+    return res.status(400).json({ msg: error.message });
+  }
+};
+
+//update enquiry
+const updateEnquiry = async (req, res) => {
+  try {
+    const updatedEnquiry = await enqModel.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.json(updatedEnquiry);
+  } catch (error) {
+    res.json({ msg: error.message });
+  }
+};
+
+module.exports = { singleEnq, createEnquiry, deleteEnquiry, allEnquiries, updateEnquiry };

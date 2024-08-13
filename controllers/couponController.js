@@ -26,7 +26,7 @@ const UpdateCoupon = async (req, res) => {
 
 const deleteCoupon = async (req, res) => {
   try {
-    const deletedCoupon = await CouponModel.findByIdAndDelete(req.body.id);
+    const deletedCoupon = await CouponModel.findByIdAndDelete(req.params.id);
     if (deletedCoupon) {
       res.json(deletedCoupon);
     }
@@ -37,7 +37,8 @@ const deleteCoupon = async (req, res) => {
 
 const getAllCoupons = async (req, res) => {
   try {
-    const allCoupons = await CouponModel.find({});
+    console.log(req.query.id, "test test")
+    const allCoupons = await CouponModel.find({ id: req.query.id });
 
     if (allCoupons) {
       res.json(allCoupons);
@@ -47,14 +48,36 @@ const getAllCoupons = async (req, res) => {
   }
 };
 
+const getACoupon = async (req, res) => {
+  console.log(req.params, "test test")
+  try {
+    
+    const allCoupons = await CouponModel.find({ _id: req.params.id });
+
+    if (allCoupons) {
+      res.json(allCoupons);
+    }
+  } catch (error) {
+    res.json(error.message);
+  }
+};
+
+
 const getSingleCoupon = async (req, res) => {
-  const coupon = await CouponModel.find({title: req.query?.title});
+  const coupon = await CouponModel.find({ title: req.query?.title });
   if (coupon) {
     return res.json(coupon);
   }
   try {
   } catch (error) {
-    return res.status(404).json(error?.message)
+    return res.status(404).json(error?.message);
   }
 };
-module.exports = { createCoupon, UpdateCoupon, deleteCoupon, getAllCoupons, getSingleCoupon };
+module.exports = {
+  createCoupon,
+  UpdateCoupon,
+  deleteCoupon,
+  getAllCoupons,
+  getSingleCoupon,
+  getACoupon
+};
