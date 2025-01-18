@@ -37,8 +37,8 @@ const deleteCoupon = async (req, res) => {
 
 const getAllCoupons = async (req, res) => {
   try {
-    console.log(req.query.id, "test test")
-    const allCoupons = await CouponModel.find({ id: req.query.id });
+   
+    const allCoupons = await CouponModel.find({});
 
     if (allCoupons) {
       res.json(allCoupons);
